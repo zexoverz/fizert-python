@@ -132,6 +132,22 @@ def productList():
 
     print(pd.DataFrame(productData, columns=["name", "stock", "price", "size"]))
 
+def buyProduct(index):
+    index = int(index)
+    if(userLogin == "User Not Login"):
+        print("Error ->> User need login to buy product")
+        return
+    if(index > len(productData)):
+        print("Error ->> Product Not Found")
+        return
+    
+    product = productData[index]
+    product['stock'] = product['stock'] - 1
+    productData[index] = product
+
+    print("Buy Product Success")
+    print(product)
+
 
 
 
@@ -149,6 +165,8 @@ def switch(command):
         login(argument[0], argument[1])
     elif command == "product-list":
         productList()
+    elif command == "buy":
+        buyProduct(argument[0])
     else :
         docs()
         print("please input correct command")
