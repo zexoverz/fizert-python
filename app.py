@@ -35,6 +35,7 @@ def docs():
     print("> python app.py login <username> <password>")
     print("> python app.py product-list ")
     print("> python app.py buy <productIndex> ")
+    print("> python app.py logout")
     print("\n")
     print("NOTE :")
     print("1. BUY PRODUCT WAJIB LOGIN")
@@ -123,7 +124,23 @@ def login(username, password):
 
     print("Login User Success ")
     print("username : " + username)
+
+def logout():
+    data = userData
+
+    # Update Status Logout
+    def updateStatusLogout(item):
+        item['status_login'] = False
+        return item
     
+    data = list(map(updateStatusLogout, data))
+
+    # Write to JSON
+    with open("./db/user.json", "w") as outfile:
+        json.dump(data, outfile)
+
+    print("Logout User Success ")
+    print("Auth Login -> " + "User Not Login")    
 
 def productList():
     if(userLogin == "User Not Login"):
@@ -167,6 +184,8 @@ def switch(command):
         productList()
     elif command == "buy":
         buyProduct(argument[0])
+    elif command == "logout":
+        logout()
     else :
         docs()
         print("please input correct command")
