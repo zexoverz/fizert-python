@@ -1,6 +1,8 @@
 import sys
 import json
 import pandas as pd
+import datetime
+
 
 command = sys.argv[1]
 argument = sys.argv[2:7]
@@ -12,6 +14,7 @@ transactionFile = open('./db/transaction.json', "r")
 
 userData = json.loads(userFile.read())
 productData = json.loads(productFile.read())
+transactionData = json.loads(transactionFile.read())
 
 
 # FIZERT COMMAND
@@ -162,8 +165,11 @@ def productList():
         return
 
     print(pd.DataFrame(productData, columns=["name", "stock", "price", "size"]))
+    print(" ")
+    print("Buy Product -> python app.py buy <productIndex> ")
 
 def buyProduct(index):
+    tempTransaction = transactionData
     index = int(index)
     if(userLogin == "User Not Login"):
         print("Error ->> User need login to buy product")
@@ -172,9 +178,24 @@ def buyProduct(index):
         print("Error ->> Product Not Found")
         return
     
+    
     product = productData[index]
     product['stock'] = product['stock'] - 1
     productData[index] = product
+
+    newTransaction = {
+        "username" : user[0]['username'],
+        "product_index" : index,
+        "product_name" : product['name'],
+        "product_price" : product['price'],
+        "transaction_date" : str(datetime.datetime.now())
+    }
+
+    tempTransaction.append(newTransaction)
+
+    # Write to JSON
+    with open("./db/transaction.json", "w") as outfile:
+        json.dump(tempTransaction, outfile)
 
     print("Buy Product Success")
     print(product)
