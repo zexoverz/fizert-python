@@ -3,30 +3,35 @@
         "name" : "Pupuk Urea",
         "stock" : 100,
         "price" : 10000,
-        "size" : "500 gram" 
+        "size" : "500 gram",
+        "allowance" : false
     },
     {
         "name" : "Pupuk NPK",
         "stock" : 57,
         "price" : 6000 ,
-        "size" : "500 gram"
+        "size" : "500 gram",
+        "allowance" : false
     },
     {
         "name" : "Pupuk NPK",
         "stock" : 81,
         "price" : 6000 ,
-        "size" : "500 gram"
+        "size" : "500 gram",
+        "allowance" : false
     },
     {
         "name" : "Pupuk Premium SK COTE",
         "stock" : 20,
         "price" : 1400000,
-        "size" : "25 kilo gram"
+        "size" : "25 kilo gram",
+        "allowance" : false
     },
     {
         "name" : "Puri Garden Pupuk",
         "stock" : 60,
         "price" : 14000,
-        "size" : "250 gram"
+        "size" : "250 gram",
+        "allowance" : false
     }
 ]

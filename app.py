@@ -8,6 +8,7 @@ argument = sys.argv[2:7]
 # JSON file
 userFile = open ('./db/user.json', "r")
 productFile = open ('./db/product.json', "r")
+transactionFile = open('./db/transaction.json', "r")
 
 userData = json.loads(userFile.read())
 productData = json.loads(productFile.read())
@@ -41,6 +42,19 @@ def docs():
     print("1. BUY PRODUCT WAJIB LOGIN")
     print("2. TIDAK BISA LOGIN BERSAMAAN")
     print("3. HANYA ADMIN SAJA YANG BISA MENAMBAHKAN LIST PRODUCT")
+    print("\n")
+
+def AdminDocs():
+    print(" ")
+    print("Admin Command List --")
+    print("> python app.py start (Start App)")
+    print("> python app.py user-list ")
+    print("> python app.py product-list ")
+    print("> python app.py add-product <name> <stock> <price> <size>")
+    print("> python app.py transaction-list")
+    print("> python app.py appliaction-log")
+    print("> python app.py total-revenue")
+    print("> python app.py logout")
     print("\n")
 
 ## --> Logic Feature
@@ -171,11 +185,15 @@ def buyProduct(index):
 ## --> Menu Set Up
 user = list(filter(lambda item: item['status_login'] == True, userData))
 userLogin = "User Not Login"
+isAdmin = False
 
 if(len(user) != 0):
     userLogin = user[0]['username']
 
-def switch(command):
+    if(user[0]['role'] == 'admin'):
+        isAdmin = True
+
+def switchUser(command):
     if command == "register":
         register(argument[0], argument[1])
     elif command == "login":
@@ -190,10 +208,26 @@ def switch(command):
         docs()
         print("please input correct command")
 
+def switchAdmin(command):
+    if command == "add-product":
+        print("Add Product")
+    elif command == "product-list":
+        productList()
+    elif command == "logout":
+        logout()
+    else :
+        AdminDocs()
+        print("please input correct command")
+    
+
 print("\n")
 print('==================== FIZERT APP =======================')
 print("Auth Login -> " + userLogin)
-switch(command)
+
+if(isAdmin):
+    switchAdmin(command)
+else :
+    switchUser(command)
 
 
 
