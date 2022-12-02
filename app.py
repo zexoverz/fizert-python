@@ -38,6 +38,7 @@ def docs():
     print("> python app.py register <username> <password>")
     print("> python app.py login <username> <password>")
     print("> python app.py product-list ")
+    print("> python app.py my-transactions ")
     print("> python app.py buy <productIndex> ")
     print("> python app.py logout")
     print("\n")
@@ -55,8 +56,6 @@ def AdminDocs():
     print("> python app.py product-list ")
     print("> python app.py add-product <name> <stock> <price> <size>")
     print("> python app.py transaction-list")
-    print("> python app.py appliaction-log")
-    print("> python app.py total-revenue")
     print("> python app.py logout")
     print("\n")
 
@@ -83,7 +82,7 @@ def register(username = '', password = ''):
     newUser = {
         "username" : username,
         "password" : password,
-        "role" : "admin",
+        "role" : "user",
         "status_login" : False
     }
 
@@ -168,6 +167,37 @@ def productList():
     print(" ")
     print("Buy Product -> python app.py buy <productIndex> ")
 
+def userList():
+    if(isAdmin == False):
+        print("Error ->> You are not admin")
+        return
+    
+    print(pd.DataFrame(userData, columns=["username", "password", "role", "status_login"]))
+    print(" ")
+
+def myTrasanctions():
+    if(userLogin == "User Not Login"):
+        print("Error ->> User need login to see user transactions")
+        return
+
+    userData = user[0]
+
+    transactions = list(filter(lambda item: item['username'] == userData['username'], transactionData))
+
+    print(pd.DataFrame(transactions, columns=["username", "product_index", "product_name", "product_price", "transaction_date"]))
+    print(" ")
+
+def transactionList():
+    if(isAdmin == False):
+        print("Error ->> You are not admin")
+        return
+
+    print(pd.DataFrame(transactionData, columns=["username", "product_index", "product_name", "product_price", "transaction_date"]))
+    print(" ")
+
+
+    
+
 def buyProduct(index):
     tempTransaction = transactionData
     index = int(index)
@@ -200,6 +230,30 @@ def buyProduct(index):
     print("Buy Product Success")
     print(product)
 
+def addProduct(name, stock, price, size):
+    tempProduct = productData
+
+    if(isAdmin == False):
+        print("Error ->> You are not admin")
+        return
+
+    newProduct = {
+        "name" : name,
+        "stock" : int(stock),
+        "price" : int(price),
+        "size" : size
+    }
+
+    tempProduct.append(newProduct)
+
+    # Write to JSON
+    with open("./db/product.json", "w") as outfile:
+        json.dump(tempProduct, outfile)
+
+    print("Add Product Success")
+    print(newProduct)
+
+
 
 
 
@@ -221,6 +275,8 @@ def switchUser(command):
         login(argument[0], argument[1])
     elif command == "product-list":
         productList()
+    elif command == "my-transactions":
+        myTrasanctions()
     elif command == "buy":
         buyProduct(argument[0])
     elif command == "logout":
@@ -231,9 +287,13 @@ def switchUser(command):
 
 def switchAdmin(command):
     if command == "add-product":
-        print("Add Product")
+        addProduct(argument[0], argument[1], argument[2], argument[3])
     elif command == "product-list":
         productList()
+    elif command == "user-list":
+        userList()
+    elif command == "transaction-list":
+        transactionList()
     elif command == "logout":
         logout()
     else :
