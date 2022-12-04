@@ -163,7 +163,7 @@ def productList():
         print("Error ->> User need login to see product list")
         return
 
-    print(pd.DataFrame(productData, columns=["name", "stock", "price", "size"]))
+    print(pd.DataFrame(productData, columns=["name", "stock", "price", "size", "subsidi"]))
     print(" ")
     print("Buy Product -> python app.py buy <productIndex> ")
 
@@ -184,7 +184,7 @@ def myTrasanctions():
 
     transactions = list(filter(lambda item: item['username'] == userData['username'], transactionData))
 
-    print(pd.DataFrame(transactions, columns=["username", "product_index", "product_name", "product_price", "transaction_date"]))
+    print(pd.DataFrame(transactions, columns=["username", "product_index", "product_name", "product_price", "subsidi", "transaction_date"]))
     print(" ")
 
 def transactionList():
@@ -192,7 +192,7 @@ def transactionList():
         print("Error ->> You are not admin")
         return
 
-    print(pd.DataFrame(transactionData, columns=["username", "product_index", "product_name", "product_price", "transaction_date"]))
+    print(pd.DataFrame(transactionData, columns=["username", "product_index", "product_name", "product_price", "subsidi", "transaction_date"]))
     print(" ")
 
 
@@ -207,9 +207,16 @@ def buyProduct(index):
     if(index > len(productData)):
         print("Error ->> Product Not Found")
         return
+
+    
     
     
     product = productData[index]
+
+    if(product['stock'] == 0):
+        print("Error ->> Product out of stock")
+        return
+
     product['stock'] = product['stock'] - 1
     productData[index] = product
 
@@ -218,6 +225,7 @@ def buyProduct(index):
         "product_index" : index,
         "product_name" : product['name'],
         "product_price" : product['price'],
+        "subsidi" : product['subsidi'],
         "transaction_date" : str(datetime.datetime.now())
     }
 
@@ -241,7 +249,8 @@ def addProduct(name, stock, price, size):
         "name" : name,
         "stock" : int(stock),
         "price" : int(price),
-        "size" : size
+        "size" : size,
+        "allowance" : False
     }
 
     tempProduct.append(newProduct)
@@ -261,6 +270,7 @@ def addProduct(name, stock, price, size):
 user = list(filter(lambda item: item['status_login'] == True, userData))
 userLogin = "User Not Login"
 isAdmin = False
+subsidiLeft = 0
 
 if(len(user) != 0):
     userLogin = user[0]['username']
@@ -304,6 +314,12 @@ def switchAdmin(command):
 print("\n")
 print('==================== FIZERT APP =======================')
 print("Auth Login -> " + userLogin)
+
+
+if(userLogin != "User Not Login"):
+    mySubsidi = list(filter(lambda item: item['username'] == userData['username'] and item['subsidi'] == True, transactionData))
+    subsidiLeft = 3 - len(mySubsidi)
+    print("Subsidi stock left -> " + subsidiLeft)
 
 if(isAdmin):
     switchAdmin(command)
