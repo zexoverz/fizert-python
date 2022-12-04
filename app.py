@@ -217,6 +217,10 @@ def buyProduct(index):
         print("Error ->> Product out of stock")
         return
 
+    if(product['subsidi'] == True and subsidiLeft == 0):
+        print("Error ->> You already buy 3 subsidi product")
+        return
+
     product['stock'] = product['stock'] - 1
     productData[index] = product
 
@@ -261,6 +265,18 @@ def addProduct(name, stock, price, size):
 
     print("Add Product Success")
     print(newProduct)
+
+def updateStock(index, stock):
+    tempProduct = productData
+
+    if(isAdmin == False):
+        print("Error ->> You are not admin")
+        return
+
+
+    tempProduct[index]['stock'] = int(stock)
+    print("Add Stock Product Success")
+    print(tempProduct[index])
 
 
 
@@ -316,10 +332,10 @@ print('==================== FIZERT APP =======================')
 print("Auth Login -> " + userLogin)
 
 
-if(userLogin != "User Not Login"):
-    mySubsidi = list(filter(lambda item: item['username'] == userData['username'] and item['subsidi'] == True, transactionData))
+if(userLogin != "User Not Login" and isAdmin == False):
+    mySubsidi = list(filter(lambda item: item['username'] == user[0]['username'] and item['subsidi'] == True, transactionData))
     subsidiLeft = 3 - len(mySubsidi)
-    print("Subsidi stock left -> " + subsidiLeft)
+    print("Subsidi stock left -> " + str(subsidiLeft))
 
 if(isAdmin):
     switchAdmin(command)
