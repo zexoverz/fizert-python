@@ -55,6 +55,8 @@ def AdminDocs():
     print("> python app.py user-list ")
     print("> python app.py product-list ")
     print("> python app.py add-product <name> <stock> <price> <size>")
+    print("> python app.py update-stock <productIndex> <stock> ")
+    print("> python app.py delete-product <productIndex>")
     print("> python app.py transaction-list")
     print("> python app.py logout")
     print("\n")
@@ -268,6 +270,7 @@ def addProduct(name, stock, price, size):
 
 def updateStock(index, stock):
     tempProduct = productData
+    index = int(index)
 
     if(isAdmin == False):
         print("Error ->> You are not admin")
@@ -275,8 +278,36 @@ def updateStock(index, stock):
 
 
     tempProduct[index]['stock'] = int(stock)
+
+    # Write to JSON
+    with open("./db/product.json", "w") as outfile:
+        json.dump(tempProduct, outfile)
+
     print("Add Stock Product Success")
     print(tempProduct[index])
+
+def deleteProduct(index):
+    tempProduct = productData
+    index = int(index)
+
+    if(isAdmin == False):
+        print("Error ->> You are not admin")
+        return
+
+    if(tempProduct[index]['subsidi'] == True):
+        print("Error ->> You can't delete subsidi product")
+        return
+
+    del tempProduct[index]
+
+    # Write to JSON
+    with open("./db/product.json", "w") as outfile:
+        json.dump(tempProduct, outfile)
+
+    print("Delete Product Success")
+    
+    
+    
 
 
 
@@ -316,6 +347,10 @@ def switchAdmin(command):
         addProduct(argument[0], argument[1], argument[2], argument[3])
     elif command == "product-list":
         productList()
+    elif command == "update-stock":
+        updateStock(argument[0], argument[1])
+    elif command == "delete-product":
+        deleteProduct(argument[0])
     elif command == "user-list":
         userList()
     elif command == "transaction-list":
