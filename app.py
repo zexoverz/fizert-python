@@ -36,8 +36,8 @@ def docs():
     print(" ")
     print("Command List --")
     print("> python app.py start (Start App)")
-    print("> python app.py register <username> <password>")
-    print("> python app.py login <username> <password>")
+    print("> python app.py register <username> <nik> <password>")
+    print("> python app.py login <nik> <password>")
     print("> python app.py product-list ")
     print("> python app.py my-transactions ")
     print("> python app.py buy <productIndex> ")
@@ -48,6 +48,7 @@ def docs():
     print("2. TIDAK BISA LOGIN BERSAMAAN")
     print("3. HANYA ADMIN SAJA YANG BISA MENAMBAHKAN LIST PRODUCT")
     print("4. USER HANYA BOLEH MEMBELI PRODUCT SUBSIDI SEBANYAK 3x")
+    print("5. NIK WAJIB 16 DIGIT")
     print("\n")
 
 def AdminDocs():
@@ -65,19 +66,31 @@ def AdminDocs():
 
 ## --> Logic Feature
 
-def register(username = '', password = ''):
-    data = userData
-
-    # Register Validation
-    user = list(filter(lambda item: item['username'] == username, data))       
+def register(username = '', nik = '', password = ''):
+    data = userData  
 
     if(len(username) == 0):
         print("Error ->> Please input username")
         return
 
+    if(len(nik) == 0):
+        print("Error ->> Please input nik")
+        return
+
     if(len(password) == 0):
         print("Error ->> Please input password")
         return
+
+    if(nik.isnumeric() == False):
+        print("Error ->> Nik input should be number")
+        return
+
+    if(len(nik) != 16):
+        print("Error ->> Nik input should be 16 digits")
+        return
+
+    # Register Validation
+    user = list(filter(lambda item: item['username'] == username, data))     
 
     if(len(user) != 0):
         print("Error ->> Username Already Registered.")
@@ -87,7 +100,8 @@ def register(username = '', password = ''):
         "username" : username,
         "password" : password,
         "role" : "user",
-        "status_login" : False
+        "status_login" : False,
+        "nik" : int(nik)
     }
 
     data.append(newUser)
@@ -100,17 +114,26 @@ def register(username = '', password = ''):
     print(newUser)
 
 
-def login(username, password):
+def login(nik, password):
     data = userData
+    isAdmin = False
 
     # Register Validation
-    if(len(username) == 0):
-        print("Error ->> Please input username")
+    if(len(nik) == 0):
+        print("Error ->> Please input nik")
         return
 
     if(len(password) == 0):
         print("Error ->> Please input password")
         return
+
+    if(nik == 'admin'):
+        isAdmin = True
+
+    if(isAdmin == False and nik.isnumeric() == False):
+        print("Error ->> Nik input should be number")
+        return
+    
 
     # Check User Already Login
     check = list(filter(lambda item: item['status_login'] == True, data))
@@ -120,7 +143,12 @@ def login(username, password):
         return
     
     # User login logic
-    user = list(filter(lambda item: item['username'] == username, data))
+    user = []
+
+    if(isAdmin):
+        user = list(filter(lambda item: item['username'] == nik, data))
+    else:
+        user = list(filter(lambda item: item['nik'] == int(nik), data))
 
     if(len(user) == 0):
         print("Error ->> User Not Found")
@@ -132,8 +160,12 @@ def login(username, password):
 
     # Update Status Login
     def updateStatusLogin(item):
-        if(item['username'] == username):
-            item['status_login'] = True
+        if(isAdmin):
+            if(item['username'] == nik):
+                item['status_login'] = True
+        else:
+            if(item['nik'] == int(nik)):
+                item['status_login'] = True
         return item
     
     data = list(map(updateStatusLogin, data))
@@ -143,7 +175,8 @@ def login(username, password):
         json.dump(data, outfile)
 
     print("Login User Success ")
-    print("username : " + username)
+    print("username : " + user[0]['username'])
+    print("nik -> " + nik)
 
 def logout():
     data = userData
@@ -329,7 +362,7 @@ if(len(user) != 0):
 
 def switchUser(command):
     if command == "register":
-        register(argument[0], argument[1])
+        register(argument[0], argument[1], argument[2])
     elif command == "login":
         login(argument[0], argument[1])
     elif command == "product-list":
