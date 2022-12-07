@@ -276,6 +276,10 @@ def buyProduct(index):
     with open("./db/transaction.json", "w") as outfile:
         json.dump(tempTransaction, outfile)
 
+    # Write to JSON
+    with open("./db/product.json", "w") as outfile:
+        json.dump(productData, outfile)
+
     print("Buy Product Success")
     print(product)
 
@@ -291,7 +295,7 @@ def addProduct(name, stock, price, size):
         "stock" : int(stock),
         "price" : int(price),
         "size" : size,
-        "allowance" : False
+        "subsidi" : False
     }
 
     tempProduct.append(newProduct)
